@@ -1,8 +1,15 @@
 import asyncio
+import os
+import sys
+
+# Добавляем корневую директорию в sys.path для корректного импорта
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import inspect
+import config
 
-DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+DATABASE_URL = config.DATABASE
 
 async def check_structure():
     engine = create_async_engine(DATABASE_URL, echo=True)

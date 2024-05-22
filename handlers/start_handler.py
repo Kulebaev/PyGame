@@ -27,7 +27,7 @@ class StartHandler:
                 db.add(chat)
                 await db.commit()
 
-            user_query = select(User).join(User.chat).where(Chat.chat_id == chat_id, User.username == message.from_user.username)
+            user_query = select(User).join(User.chat).where(Chat.chat_id == chat_id)
             user_result = await db.execute(user_query)
             user = user_result.scalars().first()
 
