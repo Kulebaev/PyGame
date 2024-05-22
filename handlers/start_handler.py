@@ -4,6 +4,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.filters.state import State, StatesGroup
 from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
 from db import get_db, User, Chat
 
 class Form(StatesGroup):
@@ -57,7 +58,6 @@ class StartHandler:
         data = await state.get_data()
 
         username = data['username']
-
         hashed_password = data['password']  # Здесь вы можете захешировать пароль перед сохранением
 
         async with get_db() as db:
@@ -71,10 +71,17 @@ class StartHandler:
                 chat_id_in_db = chat.id
             else:
                 chat_id_in_db = chat.id
+
             user = User(chat_id=chat_id_in_db, username=username, hashed_password=hashed_password)
             db.add(user)
-            await db.commit()
 
-        await message.answer(f"Спасибо за регистрацию!\nВаш логин: {username}\nВаш пароль: {hashed_password}")
+            try:
+                await db.commit()
+                await message.answer(f"Спасибо за регистрацию!\nВаш логин: {username}\nВаш пароль: {hashed_password}")
+                await state.clear()
 
-        await state.clear()
+            except IntegrityError:
+                
+                await db.rollback()
+                await message.answer("Имя пользователя уже существует, пожалуйста, введите другое имя.")
+                await state.set_state(Form.username)
