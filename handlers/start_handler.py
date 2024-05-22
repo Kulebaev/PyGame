@@ -38,16 +38,28 @@ class StartHandler:
             await state.set_state(Form.username)
 
     async def process_username(self, message: types.Message, state: FSMContext):
-        await state.update_data(username=message.text)
-        await message.answer("Пожалуйста, введите ваш пароль.")
-        await state.set_state(Form.password)
+        async with get_db() as db:
+            username = message.text
+            user_query = select(User).where(User.username == username)
+            user_result = await db.execute(user_query)
+            user = user_result.scalars().first()
+            
+            if user:
+                await message.answer("Это имя пользователя уже существует, пожалуйста, введите другое имя.")
+                return
+            
+            await state.update_data(username=username)
+            await message.answer("Пожалуйста, введите ваш пароль.")
+            await state.set_state(Form.password)
 
     async def process_password(self, message: types.Message, state: FSMContext):
         await state.update_data(password=message.text)
         data = await state.get_data()
 
         username = data['username']
+
         hashed_password = data['password']  # Здесь вы можете захешировать пароль перед сохранением
+
         async with get_db() as db:
             chat_id = str(message.chat.id)
             chat = await db.execute(select(Chat).filter(Chat.chat_id == chat_id))
@@ -63,5 +75,6 @@ class StartHandler:
             db.add(user)
             await db.commit()
 
-        await message.answer("Спасибо за регистрацию!")
+        await message.answer(f"Спасибо за регистрацию!\nВаш логин: {username}\nВаш пароль: {hashed_password}")
+
         await state.clear()
