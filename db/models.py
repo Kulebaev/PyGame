@@ -17,7 +17,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     chat_id = Column(Integer, ForeignKey('chats.id'), nullable=True)
-    username = Column(String, index=True, nullable=False)
+    username = Column(String, index=True, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
     email = Column(String, nullable=True)
     

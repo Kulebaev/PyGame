@@ -53,5 +53,5 @@ class AuthHandler:
                 await message.answer("Вы успешно авторизовались!")
                 await state.clear()
             else:
-                await message.answer("Неверное имя пользователя или пароль. Попробуйте заново.")
+                await message.answer("Неверное имя пользователя или пароль. Введите имя пользователя ещё раз.")
                 await state.set_state(Form.username_auth)
