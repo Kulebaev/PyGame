@@ -1,8 +1,15 @@
-# db/db.py
+
+import os
+import sys
+
+# Добавляем корневую директорию в sys.path для корректного импорта
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+import config
 
-DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+DATABASE_URL = config.DATABASE
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
