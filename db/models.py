@@ -1,3 +1,4 @@
+# db/models.py
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from db.db import Base
@@ -15,8 +16,9 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    chat_id = Column(Integer, ForeignKey('chats.id'), nullable=False)
-    username = Column(String, index=True, nullable=False, unique=True)
+    chat_id = Column(Integer, ForeignKey('chats.id'), nullable=True)
+    username = Column(String, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-
+    email = Column(String, nullable=True)
+    
     chat = relationship("Chat", back_populates="users")

@@ -19,12 +19,12 @@ async def check_structure():
 def do_inspect(conn):
     inspector = inspect(conn)
     tables = inspector.get_table_names()
-    if 'chats' in tables:
-        columns = inspector.get_columns('chats')
-        print(f"Таблица 'chats' существует. Колонки:")
+    if 'users' in tables:
+        columns = inspector.get_columns('users')
+        print(f"Таблица 'users' существует. Колонки:")
         for column in columns:
             print(f"{column['name']} - {column['type']}")
     else:
-        print("Таблица 'chats' не существует.")
+        print("Таблица 'users' не существует.")
 
 asyncio.run(check_structure())
